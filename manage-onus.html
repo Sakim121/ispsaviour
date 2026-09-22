@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ISP SAVIOUR 2.0 - Manage ONUs</title>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root{
+    --nav-bg:#e9f0f9;
+    --nav-border:#d7e0ee;
+    --text-dark:#1f2430;
+    --text-gray:#6b7280;
+    --purple:#6a5cf0;
+    --green:#2bb24c;
+    --green-dark:#219e42;
+    --blue:#3579f6;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:#1c1c1c;color:var(--text-dark);overflow:hidden;}
+  .app{display:flex;flex-direction:column;height:100vh;}
+
+  /* header */
+  .navbar{
+    background:var(--nav-bg);
+    border-bottom:1px solid var(--nav-border);
+    display:flex;
+    align-items:center;
+    padding:10px 24px;
+    gap:24px;
+    flex-wrap:wrap;
+    position:relative;z-index:500;
+  }
+  .brand{margin-right:8px;}
+  .brand-title{font-weight:800;font-size:17px;letter-spacing:.02em;}
+  .brand-sub{font-size:11px;color:var(--text-gray);margin-top:1px;}
+  .nav-item{position:relative;color:#3d4451;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:3px;white-space:nowrap;}
+  .nav-item:hover{color:#111827;}
+  .nav-item .caret{font-size:9px;color:#8891a0;}
+  .nav-spacer{flex:1;}
+  .avatar{
+    width:34px;height:34px;border-radius:50%;background:#f6c343;
+    display:flex;align-items:center;justify-content:center;font-size:18px;
+  }
+  .dropdown-panel{
+    position:absolute;top:calc(100% + 10px);left:0;background:#fff;border-radius:10px;
+    box-shadow:0 10px 30px rgba(20,25,40,.16);padding:8px 0;min-width:200px;display:none;z-index:600;
+  }
+  .nav-item.open .dropdown-panel{display:block;}
+  .dropdown-panel a{display:block;padding:9px 18px;color:#3d4451;font-size:13.5px;text-decoration:none;}
+  .dropdown-panel a:hover{background:#f4f6fa;}
+
+  /* toolbar */
+  .toolbar{
+    background:#fff;
+    border-bottom:1px solid var(--nav-border);
+    display:flex;align-items:center;gap:16px;
+    padding:12px 24px;flex-wrap:wrap;
+    position:relative;z-index:100;
+  }
+  .toolbar-title{font-weight:700;font-size:14.5px;display:flex;align-items:center;gap:6px;}
+  .tsep{color:#d0d5dd;}
+  .tfield{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-gray);}
+  select{padding:7px 12px;border-radius:7px;border:1px solid #e3e6ec;font-size:13.5px;color:var(--text-dark);}
+  .mode-group{display:flex;gap:16px;font-size:13.5px;}
+  .mode-group label{display:flex;align-items:center;gap:5px;cursor:pointer;}
+  .mode-group input{accent-color:var(--blue);}
+  .mode-group .lbl-add{color:var(--green-dark);}
+  .mode-group .lbl-edit{color:#2b6cb0;}
+  .mode-group .lbl-del{color:#c0392b;}
+  .count-pill{background:#eaf1ff;color:#3579f6;font-weight:700;padding:6px 14px;border-radius:8px;font-size:13px;}
+  .tsearch{flex:1;min-width:160px;padding:8px 14px;border-radius:8px;border:1px solid #e3e6ec;font-size:13.5px;}
+
+  .mode-banner{
+    background:#eef4ff;color:#2b6cb0;font-size:13.5px;padding:8px 24px;
+    display:none;
+  }
+  .mode-banner.show{display:block;}
+
+  /* map */
+  .map-wrap{flex:1;position:relative;}
+  #map{position:absolute;inset:0;}
+
+  /* modal */
+  .modal-overlay-anchor{ }
+  .add-modal{
+    background:#fff;border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.3);
+    padding:20px 22px 22px;width:290px;
+  }
+  .add-modal-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .add-modal-title .t{font-weight:800;color:var(--green-dark);font-size:15px;display:flex;align-items:center;gap:6px;}
+  .add-modal-title .x{cursor:pointer;color:#9aa1ae;font-size:16px;}
+  .field-label{font-size:11.5px;color:var(--text-gray);letter-spacing:.04em;margin-bottom:6px;}
+  .name-input{
+    width:100%;padding:10px 12px;border-radius:8px;border:1.5px solid var(--purple);
+    font-size:14px;outline:none;
+  }
+  .helper{font-size:11.5px;color:var(--text-gray);margin-top:8px;line-height:1.5;}
+  .coord{font-size:12px;color:var(--text-gray);margin-top:4px;}
+  .confirm-btn{
+    width:100%;margin-top:14px;background:var(--green);color:#fff;border:none;border-radius:9px;
+    padding:11px 0;font-weight:700;font-size:14px;cursor:pointer;
+  }
+  .confirm-btn:hover{background:var(--green-dark);}
+
+  .confirm-modal{
+    background:#fff;border-radius:14px;box-shadow:0 12px 34px rgba(0,0,0,.3);
+    padding:18px 20px 20px;width:300px;
+  }
+  .confirm-title{font-weight:800;color:var(--green-dark);font-size:14.5px;display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+  .confirm-line{font-size:13.5px;margin:3px 0;color:var(--text-dark);}
+  .confirm-btns{display:flex;gap:10px;margin-top:14px;}
+  .yes-btn{
+    flex:1;background:var(--green);color:#fff;border:none;border-radius:9px;padding:10px 0;
+    font-weight:700;font-size:13.5px;cursor:pointer;
+  }
+  .yes-btn:hover{background:var(--green-dark);}
+  .edit-btn{
+    background:#fff;border:1px solid #e3e6ec;border-radius:9px;padding:10px 16px;
+    font-size:13.5px;cursor:pointer;color:var(--text-dark);
+  }
+
+  .onu-marker{
+    width:20px;height:20px;border-radius:50%;background:var(--green);
+    box-shadow:0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.35);
+  }
+  .back-link{
+    position:absolute;top:14px;left:14px;z-index:1000;
+    background:#fff;border-radius:8px;padding:7px 14px;font-size:12.5px;
+    box-shadow:0 4px 14px rgba(0,0,0,.2);color:#1f2430;text-decoration:none;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="navbar" id="navbar">
+    <div class="brand">
+      <div class="brand-title">ISP SAVIOUR 2.0</div>
+      <div class="brand-sub">Fiber Network Control Panel</div>
+    </div>
+    <div class="nav-item">Home</div>
+    <div class="nav-item" data-menu="live">Live <span class="caret">▾</span>
+      <div class="dropdown-panel">
+        <a href="#">Live - Map</a><a href="#">Live - Wire Down ONUs</a>
+        <a href="#">Live - Offline ONUs</a><a href="#">Live - Online ONUs</a><a href="#">Live - ONU Log</a>
+      </div>
+    </div>
+    <div class="nav-item">OLT/ PONs <span class="caret">▾</span></div>
+    <div class="nav-item">C/S <span class="caret">▾</span></div>
+    <div class="nav-item open" data-menu="onu">ONU <span class="caret">▾</span>
+      <div class="dropdown-panel">
+        <a href="#">View Edit Del ONU</a><a href="#">Add ONU</a>
+        <a href="#" style="font-weight:700;">Manage ONU Map</a>
+        <a href="#">Edit ONU GPS DB</a><a href="#">Add ONU Bulk</a>
+      </div>
+    </div>
+    <div class="nav-item">Landmarks <span class="caret">▾</span></div>
+    <div class="nav-item" data-menu="fp">Fiber Paths <span class="caret">▾</span>
+      <div class="dropdown-panel">
+        <a href="fiber-paths.html">View Fiber Paths</a>
+        <a href="fiber-paths.html">Add Fiber Paths Map</a>
+        <a href="#">Edit Fiber Paths Map</a><a href="#">Delete Fiber Paths Map</a>
+      </div>
+    </div>
+    <div class="nav-item">Radius <span class="caret">▾</span></div>
+    <div class="nav-item">Tools <span class="caret">▾</span></div>
+    <a class="nav-item" href="settings.html" style="text-decoration:none;">⚙ Settings</a>
+    <div class="nav-item">WISP <span class="caret">▾</span></div>
+    <div class="nav-spacer"></div>
+    <div class="nav-item nav-logout">Logout</div>
+    <div class="avatar">🙂</div>
+  </div>
+
+  <div class="toolbar">
+    <div class="toolbar-title">📍 Manage ONUs</div>
+    <span class="tsep">|</span>
+    <div class="tfield">OLT
+      <select id="oltSel"><option>Ark OLT 1</option></select>
+    </div>
+    <div class="tfield">PON
+      <select id="ponSel"><option>PON 2</option><option>PON 1</option><option>PON 3</option></select>
+    </div>
+    <span class="tsep">|</span>
+    <div class="mode-group" id="modeGroup">
+      <label><input type="radio" name="mode" value="view"> View</label>
+      <label><input type="radio" name="mode" value="add" checked> <span class="lbl-add">+ Add</span></label>
+      <label><input type="radio" name="mode" value="edit"> <span class="lbl-edit">Edit</span></label>
+      <label><input type="radio" name="mode" value="delete"> <span class="lbl-del">Delete</span></label>
+    </div>
+    <div class="nav-spacer"></div>
+    <div class="count-pill" id="countPill">PON 2 — 28 ONUs</div>
+    <input class="tsearch" style="max-width:220px;" placeholder="Search ONU...">
+  </div>
+
+  <div class="mode-banner" id="addBanner">+ Add Mode — Click anywhere on the map to add a new ONU.</div>
+
+  <div class="map-wrap">
+    <a class="back-link" href="dashboard.html">← Home</a>
+    <div id="map"></div>
+  </div>
+</div>
+
+<script>
+  const BACKEND_URL = window.ISP_BACKEND_URL;
+
+  // dropdown toggle
+  const navItems = document.querySelectorAll('.nav-item[data-menu]');
+  navItems.forEach(item=>{
+    item.addEventListener('click', (e)=>{
+      const wasOpen = item.classList.contains('open');
+      navItems.forEach(i=>i.classList.remove('open'));
+      if(!wasOpen) item.classList.add('open');
+      e.stopPropagation();
+    });
+  });
+  document.addEventListener('click', ()=> navItems.forEach(i=>i.classList.remove('open')));
+
+  // mode banner
+  const modeRadios = document.querySelectorAll('input[name=mode]');
+  const banner = document.getElementById('addBanner');
+  function updateBanner(){
+    const val = document.querySelector('input[name=mode]:checked').value;
+    banner.classList.toggle('show', val==='add');
+  }
+  modeRadios.forEach(r=>r.addEventListener('change', updateBanner));
+  updateBanner();
+
+  // role-based restriction: viewers can only View, not Add/Edit/Delete
+  document.addEventListener('DOMContentLoaded', ()=>{
+    if(window.ISP_AUTH && window.ISP_AUTH.role === 'viewer'){
+      document.querySelectorAll('#modeGroup input[value=add], #modeGroup input[value=edit], #modeGroup input[value=delete]').forEach(r=>{
+        r.disabled = true;
+        r.closest('label').style.opacity = '0.4';
+        r.closest('label').title = 'Viewers have read-only access';
+      });
+      document.querySelector('#modeGroup input[value=view]').checked = true;
+      updateBanner();
+      const badge = document.createElement('span');
+      badge.textContent = '👁 Read-only (viewer)';
+      badge.style.cssText = 'background:#f1f2f4;color:#5f6672;padding:5px 12px;border-radius:7px;font-size:12.5px;font-weight:600;margin-left:8px;';
+      document.querySelector('.toolbar-title').after(badge);
+    }
+  });
+
+  // map
+  const map = L.map('map', {zoomControl:false}).setView([14.7540, 78.5463], 16);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution:'Imagery &copy; Esri, Maxar', maxZoom:20
+  }).addTo(map);
+  L.control.zoom({position:'topleft'}).addTo(map);
+  L.control.layers(null,null,{position:'topright', collapsed:true}).addTo(map);
+
+  const icon = L.divIcon({className:'', html:'<div class="onu-marker"></div>', iconSize:[20,20]});
+  L.marker([14.7538,78.5460], {icon}).addTo(map);
+
+  let addModalLayer = null;
+
+  function closeAddModal(){
+    if(addModalLayer){ map.closePopup(); addModalLayer=null; }
+  }
+
+  map.on('click', function(e){
+    if(document.querySelector('input[name=mode]:checked').value !== 'add') return;
+
+    const lat = e.latlng.lat.toFixed(6);
+    const lng = e.latlng.lng.toFixed(6);
+
+    const html = `
+      <div class="add-modal">
+        <div class="add-modal-title">
+          <span class="t">＋ Add / Assign ONU</span>
+          <span class="x" onclick="window.__closePopup()">✕</span>
+        </div>
+        <div class="field-label">ONU NAME</div>
+        <input class="name-input" id="onuNameInput" placeholder="Type name or search existing...">
+        <div class="helper">📍 Type 2+ letters to find ONUs without GPS in this PON</div>
+        <div class="coord">📌 ${lat}, ${lng}</div>
+        <button class="confirm-btn" id="confirmAddBtn">✓ Confirm</button>
+      </div>`;
+
+    const popup = L.popup({closeButton:false, className:'no-tip', maxWidth:320})
+      .setLatLng(e.latlng)
+      .setContent(html)
+      .openOn(map);
+
+    setTimeout(()=>{
+      document.getElementById('confirmAddBtn').addEventListener('click', ()=>{
+        const name = document.getElementById('onuNameInput').value.trim() || 'ramesh';
+        showConfirm(name, lat, lng, e.latlng);
+      });
+    }, 0);
+  });
+
+  function showConfirm(name, lat, lng, latlng){
+    const html = `
+      <div class="confirm-modal">
+        <div class="confirm-title">✓ Confirm Add ONU</div>
+        <div class="confirm-line">Name: <b>${name}</b></div>
+        <div class="confirm-line">📌 ${lat}, ${lng}</div>
+        <div class="confirm-btns">
+          <button class="yes-btn" id="yesAddBtn">✓ Yes, Add</button>
+          <button class="edit-btn" id="editBtn">✎ Edit</button>
+        </div>
+      </div>`;
+    L.popup({closeButton:false, maxWidth:320})
+      .setLatLng(latlng)
+      .setContent(html)
+      .openOn(map);
+
+    setTimeout(()=>{
+      document.getElementById('yesAddBtn').addEventListener('click', async ()=>{
+        const yesBtn = document.getElementById('yesAddBtn');
+        yesBtn.textContent = 'Saving...'; yesBtn.disabled = true;
+        try{
+          await fetch(`${BACKEND_URL}/api/onus`, {
+            method:'POST',
+            headers: Object.assign({'Content-Type':'application/json'}, ispAuthHeaders()),
+            body: JSON.stringify({ name, pon_id: 2, latitude: latlng.lat, longitude: latlng.lng })
+          });
+        } catch(err){
+          console.warn('Backend not reachable, added marker locally only:', err);
+        }
+        L.marker(latlng, {icon}).addTo(map);
+        map.closePopup();
+        const pill = document.getElementById('countPill');
+        const n = parseInt(pill.textContent.match(/\d+/)[0]) + 1;
+        pill.textContent = pill.textContent.replace(/\d+/, n);
+      });
+      document.getElementById('editBtn').addEventListener('click', ()=>{
+        map.closePopup();
+        map.fire('click', {latlng});
+      });
+    }, 0);
+  }
+
+  window.__closePopup = ()=> map.closePopup();
+</script>
+</body>
+</html>

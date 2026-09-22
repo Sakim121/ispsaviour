@@ -1,0 +1,9 @@
+{
+  "name": "isp-saviour-backend",
+  "version": "0.1.0",
+  "description": "Zero-dependency demo backend for the ISP SAVIOUR 2.0 frontend prototype.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

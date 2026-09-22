@@ -1,0 +1,16 @@
+{
+  "name": "isp-saviour-olt-scanner",
+  "version": "0.1.0",
+  "description": "SNMP scanner syncing a physical OLT's ONU status/RX power into Supabase.",
+  "main": "olt-scanner.js",
+  "scripts": {
+    "start": "node olt-scanner.js",
+    "discover": "DISCOVER_MODE=true node olt-scanner.js",
+    "test": "node oltParsers.test.js && NODE_PATH=./__mocks__ node integration.test.js"
+  },
+  "dependencies": {
+    "net-snmp": "^3.11.2",
+    "@supabase/supabase-js": "^2.45.0",
+    "dotenv": "^16.4.5"
+  }
+}

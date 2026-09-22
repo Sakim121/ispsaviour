@@ -1,0 +1,624 @@
+{
+  "olts": [
+    {
+      "id": 1,
+      "name": "Ark OLT 1",
+      "ip_address": "10.10.0.1",
+      "location": "HQ - YMR",
+      "status": "Online"
+    }
+  ],
+  "pons": [
+    {
+      "id": 1,
+      "olt_id": 1,
+      "name": "PON 1",
+      "port": 1,
+      "output_power": 9,
+      "status": "Active"
+    },
+    {
+      "id": 2,
+      "olt_id": 1,
+      "name": "PON 2",
+      "port": 2,
+      "output_power": 7,
+      "status": "Active"
+    },
+    {
+      "id": 3,
+      "olt_id": 1,
+      "name": "PON 3",
+      "port": 3,
+      "output_power": 8,
+      "status": "Active",
+      "label": "PON 3 - YMR, Korrapadu Rd, HB Colony"
+    },
+    {
+      "id": 4,
+      "olt_id": 1,
+      "name": "PON 4",
+      "port": 4,
+      "output_power": 8.5,
+      "status": "Active"
+    }
+  ],
+  "landmarks": [
+    {
+      "id": 1,
+      "name": "VK Hall",
+      "latitude": 14.7548,
+      "longitude": 78.5445,
+      "type": "hall"
+    },
+    {
+      "id": 2,
+      "name": "SEH Gate",
+      "latitude": 14.7536,
+      "longitude": 78.546,
+      "type": "gate"
+    }
+  ],
+  "onus": [
+    {
+      "id": 1,
+      "name": "healthcare2",
+      "onu_id": "EPON0/2:13",
+      "pon_id": 2,
+      "mac": "8C:8A:BB:57:DC:74",
+      "status": "Online",
+      "distance": 411,
+      "rx_power": -11.48,
+      "connected_at": "2026-05-06T19:22:16",
+      "latitude": 14.7538,
+      "longitude": 78.546,
+      "radius_username": "healthcare2 (10122)",
+      "radius_account": "Active",
+      "radius_status": "Online",
+      "radius_mac": "A4:2B:8C:61:F6:A7",
+      "radius_ip": "10.31.32.18",
+      "logged_in_at": "2026-05-06T19:26:10",
+      "download_usage_gb": 3.9,
+      "upload_usage_mb": 383.56
+    },
+    {
+      "id": 2,
+      "name": "abdul1",
+      "onu_id": "EPON0/3:3",
+      "pon_id": 3,
+      "mac": "30:D1:7E:9E:57:C5",
+      "status": "Online",
+      "distance": 720,
+      "rx_power": -13.85,
+      "connected_at": "2026-03-31T17:05:00",
+      "latitude": 14.4995,
+      "longitude": 78.4986,
+      "radius_username": "abdul1 (10201)",
+      "radius_account": "Active",
+      "radius_status": "Online",
+      "radius_mac": "30:D1:7E:9E:57:C5",
+      "radius_ip": "10.21.22.40",
+      "logged_in_at": "2026-03-31T17:06:00",
+      "download_usage_gb": 5.1,
+      "upload_usage_mb": 402.2
+    },
+    {
+      "id": 3,
+      "name": "rrraja",
+      "onu_id": "EPON0/3:23",
+      "pon_id": 3,
+      "mac": "4C:AE:1C:B8:5B:DC",
+      "status": "Power Off",
+      "distance": 4847,
+      "rx_power": null,
+      "disconnected_at": "2026-05-07T12:42:00",
+      "reason": "Power Off",
+      "latitude": 14.4986,
+      "longitude": 78.497
+    },
+    {
+      "id": 4,
+      "name": "shekarshop",
+      "onu_id": "EPON0/3:24",
+      "pon_id": 3,
+      "mac": "A8:E2:07:31:B6:65",
+      "status": "Online",
+      "distance": 646,
+      "rx_power": -16.11,
+      "connected_at": "2026-04-14T11:06:00",
+      "latitude": 14.5004,
+      "longitude": 78.5027,
+      "radius_username": "shekarshop (10014)",
+      "radius_account": "Active",
+      "radius_status": "Online",
+      "radius_mac": "F4:8C:EB:8D:7C:E1",
+      "radius_ip": "10.21.22.31",
+      "logged_in_at": "2026-05-07T09:33:00",
+      "download_usage_gb": 11.41,
+      "upload_usage_mb": 985.03
+    },
+    {
+      "id": 5,
+      "name": "ArkComboBox",
+      "onu_id": "EPON0/3:51",
+      "pon_id": 3,
+      "mac": "14:A7:2B:A6:19:37",
+      "status": "Wire Down",
+      "distance": 946,
+      "rx_power": null,
+      "disconnected_at": "2026-04-24T10:04:00",
+      "reason": "Wire Down",
+      "latitude": 14.5006,
+      "longitude": 78.4964
+    },
+    {
+      "id": 6,
+      "name": "teja",
+      "onu_id": "EPON0/1:15",
+      "pon_id": 1,
+      "mac": "9A:1D:20:33:44:55",
+      "status": "Online",
+      "distance": 3106,
+      "rx_power": -25.38,
+      "est_power": -12.64,
+      "connected_at": "2026-04-01T08:00:00",
+      "latitude": 14.75,
+      "longitude": 78.53
+    },
+    {
+      "id": 7,
+      "name": "munwar",
+      "onu_id": "EPON0/1:16",
+      "pon_id": 1,
+      "mac": "9A:1D:20:33:44:56",
+      "status": "Power Off",
+      "distance": 3146,
+      "rx_power": -26.02,
+      "est_power": -12.66,
+      "connected_at": "2026-04-01T08:00:00",
+      "latitude": 14.7502,
+      "longitude": 78.5302,
+      "reason": "Power Off",
+      "disconnected_at": "2026-09-20T15:35:50.077Z"
+    },
+    {
+      "id": 8,
+      "name": "kanwarbasha",
+      "onu_id": "EPON0/1:17",
+      "pon_id": 1,
+      "mac": "9A:1D:20:33:44:57",
+      "status": "Online",
+      "distance": 3087,
+      "rx_power": -27.45,
+      "est_power": -12.63,
+      "connected_at": "2026-04-01T08:00:00",
+      "latitude": 14.7504,
+      "longitude": 78.5304
+    },
+    {
+      "id": 9,
+      "name": "dgiri",
+      "onu_id": "EPON0/1:29",
+      "pon_id": 1,
+      "status": "Offline",
+      "reason": "Wire Down",
+      "disconnected_at": "2026-04-02T15:58:05"
+    },
+    {
+      "id": 10,
+      "name": "jrcollege",
+      "onu_id": "EPON0/1:42",
+      "pon_id": 1,
+      "status": "Offline",
+      "reason": "Power Off",
+      "disconnected_at": "2026-05-07T13:49:14"
+    },
+    {
+      "id": 11,
+      "name": "radha1",
+      "onu_id": "EPON0/1:41",
+      "pon_id": 1,
+      "status": "Offline",
+      "reason": "Power Off",
+      "disconnected_at": "2026-05-07T08:48:23"
+    },
+    {
+      "id": 12,
+      "name": "ksreddy",
+      "onu_id": "EPON0/1:9",
+      "pon_id": 1,
+      "status": "Offline",
+      "reason": "Power Off",
+      "disconnected_at": "2026-05-02T21:25:46"
+    },
+    {
+      "id": 13,
+      "name": "murthy1",
+      "onu_id": "EPON0/1:33",
+      "pon_id": 1,
+      "status": "Online",
+      "reason": "Power Off",
+      "disconnected_at": "2026-04-23T20:18:20",
+      "rx_power": -15.53,
+      "connected_at": "2026-09-20T10:10:35.813Z"
+    },
+    {
+      "id": 14,
+      "name": "vk_traders",
+      "onu_id": "EPON0/2:5",
+      "pon_id": 2,
+      "status": "Offline",
+      "reason": "Power Off",
+      "disconnected_at": "2026-05-06T10:12:02"
+    },
+    {
+      "id": 15,
+      "name": "sunitastores",
+      "onu_id": "EPON0/2:11",
+      "pon_id": 2,
+      "status": "Online",
+      "reason": "Power Off",
+      "disconnected_at": "2026-05-06T22:40:11",
+      "rx_power": -19.671321721110026,
+      "connected_at": "2026-09-20T15:35:56.081Z"
+    },
+    {
+      "id": 16,
+      "name": "rreddy2",
+      "onu_id": "EPON0/2:18",
+      "pon_id": 2,
+      "status": "Offline",
+      "reason": "N/A",
+      "disconnected_at": "2026-05-05T07:05:44"
+    },
+    {
+      "id": 17,
+      "name": "ktraders",
+      "onu_id": "EPON0/2:21",
+      "pon_id": 2,
+      "status": "Offline",
+      "reason": "Power Off",
+      "disconnected_at": "2026-05-07T02:15:09"
+    },
+    {
+      "id": 18,
+      "name": "lakshmi_store",
+      "onu_id": "EPON0/2:27",
+      "pon_id": 2,
+      "status": "Offline",
+      "reason": "N/A",
+      "disconnected_at": "2026-05-04T19:44:00"
+    },
+    {
+      "id": 19,
+      "name": "abhi_collections",
+      "onu_id": "EPON0/2:33",
+      "pon_id": 2,
+      "status": "Online",
+      "reason": "Power Off",
+      "disconnected_at": "2026-05-07T09:30:00",
+      "rx_power": -14.72,
+      "connected_at": "2026-09-20T15:35:50.077Z"
+    },
+    {
+      "id": 20,
+      "name": "arjun_mart",
+      "onu_id": "EPON0/3:8",
+      "pon_id": 3,
+      "status": "Offline",
+      "reason": "Wire Down",
+      "disconnected_at": "2026-05-02T11:05:00"
+    },
+    {
+      "id": 21,
+      "name": "preethi",
+      "onu_id": "EPON0/3:12",
+      "pon_id": 3,
+      "status": "Offline",
+      "reason": "N/A",
+      "disconnected_at": "2026-05-06T14:20:00"
+    },
+    {
+      "id": 22,
+      "name": "harish_shop",
+      "onu_id": "EPON0/3:19",
+      "pon_id": 3,
+      "status": "Online",
+      "reason": "Power Off",
+      "disconnected_at": "2026-09-20T15:35:44.080Z",
+      "rx_power": -18.667791888587285,
+      "connected_at": "2026-09-20T15:35:56.081Z"
+    },
+    {
+      "id": 23,
+      "name": "venkat_traders",
+      "onu_id": "EPON0/3:25",
+      "pon_id": 3,
+      "status": "Online",
+      "reason": "N/A",
+      "disconnected_at": "2026-05-07T06:10:00",
+      "rx_power": -17.32,
+      "connected_at": "2026-09-20T15:35:50.077Z"
+    },
+    {
+      "id": 24,
+      "name": "chandrika",
+      "onu_id": "EPON0/3:31",
+      "pon_id": 3,
+      "status": "Offline",
+      "reason": "N/A",
+      "disconnected_at": "2026-05-06T03:33:00"
+    }
+  ],
+  "rx_history": {
+    "1": [
+      {
+        "timestamp": "2026-09-20T15:35:56.081Z",
+        "rx_power": -11.36
+      },
+      {
+        "timestamp": "2026-09-20T15:35:50.077Z",
+        "rx_power": -11.49
+      },
+      {
+        "timestamp": "2026-09-20T15:35:44.080Z",
+        "rx_power": -11.39
+      },
+      {
+        "timestamp": "2026-09-20T10:10:47.817Z",
+        "rx_power": -11.88
+      },
+      {
+        "timestamp": "2026-09-20T10:10:41.813Z",
+        "rx_power": -11.69
+      },
+      {
+        "timestamp": "2026-09-20T10:10:35.813Z",
+        "rx_power": -11.61
+      },
+      {
+        "timestamp": "2026-09-20T10:04:30.099Z",
+        "rx_power": -11.55
+      }
+    ],
+    "2": [
+      {
+        "timestamp": "2026-09-20T15:35:56.081Z",
+        "rx_power": -13.98
+      },
+      {
+        "timestamp": "2026-09-20T15:35:50.077Z",
+        "rx_power": -13.82
+      },
+      {
+        "timestamp": "2026-09-20T15:35:44.080Z",
+        "rx_power": -13.73
+      },
+      {
+        "timestamp": "2026-09-20T10:10:47.817Z",
+        "rx_power": -13.67
+      },
+      {
+        "timestamp": "2026-09-20T10:10:41.813Z",
+        "rx_power": -13.78
+      },
+      {
+        "timestamp": "2026-09-20T10:10:35.813Z",
+        "rx_power": -13.78
+      },
+      {
+        "timestamp": "2026-09-20T10:04:30.099Z",
+        "rx_power": -14.02
+      }
+    ],
+    "4": [
+      {
+        "timestamp": "2026-05-07T15:30:00",
+        "rx_power": -16.25
+      },
+      {
+        "timestamp": "2026-05-07T11:50:00",
+        "rx_power": -16.09
+      },
+      {
+        "timestamp": "2026-05-07T08:00:00",
+        "rx_power": -16.16
+      },
+      {
+        "timestamp": "2026-05-07T01:35:00",
+        "rx_power": -16.04
+      },
+      {
+        "timestamp": "2026-05-06T21:50:00",
+        "rx_power": -16.07
+      }
+    ],
+    "6": [
+      {
+        "timestamp": "2026-09-20T15:35:56.081Z",
+        "rx_power": -25.14
+      },
+      {
+        "timestamp": "2026-09-20T15:35:50.077Z",
+        "rx_power": -25.31
+      },
+      {
+        "timestamp": "2026-09-20T15:35:44.080Z",
+        "rx_power": -25.45
+      },
+      {
+        "timestamp": "2026-09-20T10:10:47.817Z",
+        "rx_power": -25.19
+      },
+      {
+        "timestamp": "2026-09-20T10:10:41.813Z",
+        "rx_power": -25.36
+      },
+      {
+        "timestamp": "2026-09-20T10:10:35.813Z",
+        "rx_power": -25.49
+      },
+      {
+        "timestamp": "2026-09-20T10:04:30.099Z",
+        "rx_power": -25.29
+      }
+    ],
+    "7": [
+      {
+        "timestamp": "2026-09-20T15:35:44.080Z",
+        "rx_power": -26.05
+      },
+      {
+        "timestamp": "2026-09-20T10:10:47.817Z",
+        "rx_power": -25.69
+      },
+      {
+        "timestamp": "2026-09-20T10:10:41.813Z",
+        "rx_power": -25.66
+      },
+      {
+        "timestamp": "2026-09-20T10:10:35.813Z",
+        "rx_power": -25.84
+      },
+      {
+        "timestamp": "2026-09-20T10:04:30.099Z",
+        "rx_power": -25.94
+      }
+    ],
+    "8": [
+      {
+        "timestamp": "2026-09-20T15:35:56.081Z",
+        "rx_power": -27.42
+      },
+      {
+        "timestamp": "2026-09-20T15:35:50.077Z",
+        "rx_power": -27.3
+      },
+      {
+        "timestamp": "2026-09-20T15:35:44.080Z",
+        "rx_power": -27.46
+      },
+      {
+        "timestamp": "2026-09-20T10:10:47.817Z",
+        "rx_power": -27.61
+      },
+      {
+        "timestamp": "2026-09-20T10:10:41.813Z",
+        "rx_power": -27.45
+      },
+      {
+        "timestamp": "2026-09-20T10:10:35.813Z",
+        "rx_power": -27.49
+      },
+      {
+        "timestamp": "2026-09-20T10:04:30.099Z",
+        "rx_power": -27.45
+      }
+    ],
+    "13": [
+      {
+        "timestamp": "2026-09-20T15:35:56.081Z",
+        "rx_power": -15.53
+      },
+      {
+        "timestamp": "2026-09-20T15:35:50.077Z",
+        "rx_power": -15.45
+      },
+      {
+        "timestamp": "2026-09-20T15:35:44.080Z",
+        "rx_power": -15.55
+      },
+      {
+        "timestamp": "2026-09-20T10:10:47.817Z",
+        "rx_power": -15.53
+      },
+      {
+        "timestamp": "2026-09-20T10:10:41.813Z",
+        "rx_power": -15.39
+      },
+      {
+        "timestamp": "2026-09-20T10:10:35.813Z",
+        "rx_power": -15.27073764396187
+      }
+    ],
+    "15": [
+      {
+        "timestamp": "2026-09-20T15:35:56.081Z",
+        "rx_power": -19.671321721110026
+      }
+    ],
+    "19": [
+      {
+        "timestamp": "2026-09-20T15:35:56.081Z",
+        "rx_power": -14.72
+      },
+      {
+        "timestamp": "2026-09-20T15:35:50.077Z",
+        "rx_power": -14.752709712125839
+      }
+    ],
+    "22": [
+      {
+        "timestamp": "2026-09-20T15:35:56.081Z",
+        "rx_power": -18.667791888587285
+      },
+      {
+        "timestamp": "2026-09-20T10:10:47.817Z",
+        "rx_power": -14.032119753759517
+      }
+    ],
+    "23": [
+      {
+        "timestamp": "2026-09-20T15:35:50.077Z",
+        "rx_power": -17.364721056120395
+      }
+    ]
+  },
+  "fiber_paths": [],
+  "next_onu_id": 25,
+  "next_fiber_path_id": 1,
+  "users": [
+    {
+      "id": 1,
+      "email": "admin@isp.local",
+      "role": "admin",
+      "salt": "4b72ce7792388e2ec8c95713065670e6",
+      "hash": "bae12cdc492011cc3fa03ccedddb29230face0c4d5c657583306a5a4b83a4a05"
+    },
+    {
+      "id": 2,
+      "email": "engineer@isp.local",
+      "role": "engineer",
+      "salt": "b89ecf373c86cc70b740027dfd7d78f2",
+      "hash": "ba28e2687c36c96143ec7b846e8ec25e800882163df831ac6f2077cd6254d6a5"
+    },
+    {
+      "id": 3,
+      "email": "viewer@isp.local",
+      "role": "viewer",
+      "salt": "2220b38d03577609fbd1e2ff00e61a1f",
+      "hash": "5be5afaed92bc205bbea3e5a6b574347688e93c2c4f931a76b8dbdccf4faecd2"
+    }
+  ],
+  "settings": {
+    "poller_enabled": false,
+    "poller_mode": "mock",
+    "poll_interval_ms": 30000,
+    "olt": {
+      "host": "",
+      "snmp_community": "public",
+      "snmp_version": "2c"
+    },
+    "radius": {
+      "host": "",
+      "user": "",
+      "password": "",
+      "db_name": ""
+    },
+    "supabase": {
+      "enabled": false,
+      "url": "",
+      "key": ""
+    }
+  }
+}
