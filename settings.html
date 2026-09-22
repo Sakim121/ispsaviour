@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ISP SAVIOUR 2.0 - Settings</title>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  :root{
+    --nav-bg:#e9f0f9; --nav-border:#d7e0ee;
+    --text-dark:#1f2430; --text-gray:#6b7280;
+    --purple:#6a5cf0; --purple-dark:#5a4de0;
+    --green:#2bb24c; --green-dark:#219e42;
+    --page-bg:#f2f3f6;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:var(--page-bg);color:var(--text-dark);}
+
+  .navbar{
+    background:var(--nav-bg);border-bottom:1px solid var(--nav-border);
+    display:flex;align-items:center;padding:12px 24px;gap:16px;
+  }
+  .brand-title{font-weight:800;font-size:16px;}
+  .brand-sub{font-size:11px;color:var(--text-gray);}
+  .nav-spacer{flex:1;}
+  .nav-link{color:#3d4451;font-size:13.5px;text-decoration:none;}
+  .nav-logout{color:#3d4451;font-size:13.5px;cursor:pointer;}
+
+  .wrap{max-width:900px;margin:0 auto;padding:32px 24px 80px;}
+  h1{font-size:22px;margin:0 0 4px;}
+  .sub{color:var(--text-gray);font-size:14px;margin:0 0 28px;}
+
+  .card{
+    background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(20,25,40,.05);
+    padding:24px 26px;margin-bottom:20px;
+  }
+  .card h2{font-size:16px;margin:0 0 4px;display:flex;align-items:center;gap:8px;}
+  .card .desc{color:var(--text-gray);font-size:13px;margin:0 0 18px;}
+
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eef0f3;}
+  .toggle-row:last-child{border-bottom:none;}
+  .toggle-label{font-size:14px;font-weight:600;}
+  .toggle-sub{font-size:12.5px;color:var(--text-gray);margin-top:2px;}
+
+  .switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0;}
+  .switch input{opacity:0;width:0;height:0;}
+  .slider{position:absolute;cursor:pointer;inset:0;background:#d7dbe3;border-radius:24px;transition:.15s;}
+  .slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s;}
+  input:checked + .slider{background:var(--green);}
+  input:checked + .slider:before{transform:translateX(20px);}
+
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px;}
+  .field label{display:block;font-size:12px;color:var(--text-gray);margin-bottom:5px;}
+  .field input, .field select{
+    width:100%;padding:9px 12px;border-radius:8px;border:1px solid #e3e6ec;font-size:13.5px;
+  }
+
+  .row-actions{display:flex;gap:10px;margin-top:18px;align-items:center;flex-wrap:wrap;}
+  .btn{border:none;border-radius:9px;padding:10px 18px;font-size:13.5px;font-weight:700;cursor:pointer;}
+  .btn-primary{background:var(--purple);color:#fff;}
+  .btn-primary:hover{background:var(--purple-dark);}
+  .btn-secondary{background:#fff;border:1px solid #e3e6ec;color:var(--text-dark);}
+  .btn-secondary:hover{border-color:#c8cdd8;}
+  .btn:disabled{opacity:.6;cursor:default;}
+
+  .test-result{font-size:13px;margin-left:4px;}
+  .test-result.ok{color:var(--green-dark);}
+  .test-result.fail{color:#c0392b;}
+
+  .status-box{
+    display:flex;gap:22px;flex-wrap:wrap;background:#f7f8fb;border-radius:10px;padding:14px 16px;margin-top:6px;
+    font-size:13px;color:var(--text-gray);
+  }
+  .status-box b{color:var(--text-dark);}
+  .status-dot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;}
+  .status-dot.on{background:var(--green);}
+  .status-dot.off{background:#c8cdd8;}
+
+  .save-bar{
+    position:sticky;bottom:0;background:#fff;border-top:1px solid var(--nav-border);
+    padding:14px 26px;display:flex;justify-content:flex-end;gap:10px;
+    box-shadow:0 -4px 14px rgba(0,0,0,.05);margin-top:8px;border-radius:0 0 14px 14px;
+  }
+  .saved-msg{color:var(--green-dark);font-size:13px;align-self:center;margin-right:auto;display:none;}
+  .saved-msg.show{display:block;}
+
+  .not-admin{
+    background:#fff;border-radius:14px;padding:40px;text-align:center;color:var(--text-gray);
+  }
+</style>
+</head>
+<body>
+<div class="navbar">
+  <div>
+    <div class="brand-title">ISP SAVIOUR 2.0</div>
+    <div class="brand-sub">Fiber Network Control Panel</div>
+  </div>
+  <div class="nav-spacer"></div>
+  <a class="nav-link" href="dashboard.html">← Dashboard</a>
+  <div class="nav-logout">Logout</div>
+</div>
+
+<div class="wrap">
+  <h1>⚙ Settings</h1>
+  <p class="sub">Configure everything here — no need to touch the backend files or a terminal.</p>
+
+  <div id="content"></div>
+</div>
+
+<script>
+  const BACKEND_URL = window.ISP_BACKEND_URL;
+  const content = document.getElementById('content');
+
+  if (!window.ISP_AUTH || window.ISP_AUTH.role !== 'admin') {
+    content.innerHTML = `<div class="not-admin">🔒 Settings are admin-only. You're logged in as <b>${window.ISP_AUTH ? window.ISP_AUTH.role : '?'}</b>.<br><a href="dashboard.html">← Back to dashboard</a></div>`;
+  } else {
+    renderSettingsForm();
+  }
+
+  async function api(path, opts){
+    opts = opts || {};
+    opts.headers = Object.assign({'Content-Type':'application/json'}, ispAuthHeaders(), opts.headers||{});
+    const res = await fetch(`${BACKEND_URL}${path}`, opts);
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  }
+
+  async function renderSettingsForm(){
+    let s;
+    try{
+      s = await api('/api/settings');
+    } catch(err){
+      content.innerHTML = `<div class="card"><div style="color:#c0392b;">⚠ Could not reach backend at ${BACKEND_URL}. Start it with:<br><code>node backend/server.js</code></div></div>`;
+      return;
+    }
+
+    content.innerHTML = `
+      <div class="card">
+        <h2>📡 Live polling</h2>
+        <p class="desc">Keeps ONU status, RX power, and history moving automatically — runs inside the backend, no second terminal needed.</p>
+
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Enable live polling</div>
+            <div class="toggle-sub">Starts/stops the poller immediately when you save.</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="pollerEnabled" ${s.poller_enabled ? 'checked' : ''}>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="field-grid" style="margin-top:14px;">
+          <div class="field">
+            <label>Data source</label>
+            <select id="pollerMode">
+              <option value="mock" ${s.poller_mode==='mock'?'selected':''}>Mock data (no hardware needed — jitters demo values)</option>
+              <option value="snmp" ${s.poller_mode==='snmp'?'selected':''}>Real OLT via SNMP</option>
+              <option value="radius" ${s.poller_mode==='radius'?'selected':''}>Real RADIUS accounting DB</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Poll interval (seconds)</label>
+            <input type="number" id="pollInterval" min="5" value="${Math.round(s.poll_interval_ms/1000)}">
+          </div>
+        </div>
+
+        <div class="status-box" id="statusBox"></div>
+      </div>
+
+      <div class="card">
+        <h2>🗃 Database (Supabase)</h2>
+        <p class="desc">Move ONU data + RX power history off the local file and into your own Supabase Postgres project. Paste your project URL and <b>service_role</b> key below (Supabase dashboard → Project Settings → API) — it stays on the backend, never sent to the browser.</p>
+
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Use Supabase for storage</div>
+            <div class="toggle-sub">When off, everything stays in backend/data.json as before.</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="supabaseEnabled" ${s.supabase.enabled ? 'checked' : ''}>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="field-grid" style="margin-top:14px;">
+          <div class="field" style="grid-column:1/-1;">
+            <label>Project URL</label>
+            <input id="supabaseUrl" value="${s.supabase.url}" placeholder="https://xxxxxxxxxxxx.supabase.co">
+          </div>
+          <div class="field" style="grid-column:1/-1;">
+            <label>Service role key</label>
+            <input type="password" id="supabaseKey" placeholder="${s.supabase.key_set ? '•••••••• (leave blank to keep)' : 'eyJhbGciOi...'}">
+          </div>
+        </div>
+
+        <div class="row-actions">
+          <button class="btn btn-secondary" id="testSupabaseBtn">Test Supabase connection</button>
+          <span class="test-result" id="supabaseTestResult"></span>
+        </div>
+        <p class="desc" style="margin-top:14px;margin-bottom:0;">
+          First time connecting? Open your Supabase project's SQL Editor and run
+          <code>backend/supabase/schema.sql</code> once — it creates the tables
+          (with the same demo data you see now) so nothing breaks when you flip
+          the toggle on.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>📶 OLT connection (SNMP)</h2>
+        <p class="desc">Used when Data source = "Real OLT via SNMP". Ask your OLT vendor for the SNMP community string and confirm SNMP is enabled on the device.</p>
+        <div class="field-grid">
+          <div class="field"><label>OLT IP address</label><input id="oltHost" value="${s.olt.host}" placeholder="10.10.0.1"></div>
+          <div class="field"><label>SNMP community</label><input id="oltCommunity" value="${s.olt.snmp_community}" placeholder="public"></div>
+          <div class="field"><label>SNMP version</label>
+            <select id="oltVersion">
+              <option value="1" ${s.olt.snmp_version==='1'?'selected':''}>v1</option>
+              <option value="2c" ${s.olt.snmp_version==='2c'?'selected':''}>v2c</option>
+              <option value="3" ${s.olt.snmp_version==='3'?'selected':''}>v3</option>
+            </select>
+          </div>
+        </div>
+        <div class="row-actions">
+          <button class="btn btn-secondary" id="testOltBtn">Test OLT connection</button>
+          <span class="test-result" id="oltTestResult"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🗄 RADIUS database</h2>
+        <p class="desc">Used when Data source = "Real RADIUS accounting DB". Point this at a read-only user on your RADIUS accounting database.</p>
+        <div class="field-grid">
+          <div class="field"><label>DB host</label><input id="radiusHost" value="${s.radius.host}" placeholder="127.0.0.1"></div>
+          <div class="field"><label>Database name</label><input id="radiusDbName" value="${s.radius.db_name}" placeholder="radius"></div>
+          <div class="field"><label>DB username</label><input id="radiusUser" value="${s.radius.user}" placeholder="radius_reader"></div>
+          <div class="field"><label>DB password</label><input type="password" id="radiusPassword" placeholder="${s.radius.password_set ? '•••••••• (leave blank to keep)' : ''}"></div>
+        </div>
+        <div class="row-actions">
+          <button class="btn btn-secondary" id="testRadiusBtn">Test RADIUS connection</button>
+          <span class="test-result" id="radiusTestResult"></span>
+        </div>
+      </div>
+    `;
+
+    renderStatus(s.status, s.poller_enabled, s.poller_mode);
+
+    document.getElementById('testOltBtn').addEventListener('click', ()=>runTest('olt', 'oltTestResult'));
+    document.getElementById('testRadiusBtn').addEventListener('click', ()=>runTest('radius', 'radiusTestResult'));
+    document.getElementById('testSupabaseBtn').addEventListener('click', ()=>runTest('supabase', 'supabaseTestResult'));
+
+    // sticky save bar
+    const saveBar = document.createElement('div');
+    saveBar.className = 'save-bar';
+    saveBar.innerHTML = `<span class="saved-msg" id="savedMsg">✓ Saved</span>
+      <button class="btn btn-secondary" id="refreshStatusBtn">Refresh status</button>
+      <button class="btn btn-primary" id="saveBtn">Save settings</button>`;
+    content.appendChild(saveBar);
+
+    document.getElementById('saveBtn').addEventListener('click', saveSettings);
+    document.getElementById('refreshStatusBtn').addEventListener('click', refreshStatus);
+  }
+
+  function renderStatus(status, enabled, mode){
+    const box = document.getElementById('statusBox');
+    box.innerHTML = `
+      <div><span class="status-dot ${status.running?'on':'off'}"></span><b>${status.running ? 'Running' : 'Stopped'}</b> (${mode} mode)</div>
+      <div>Last run: <b>${status.lastRun ? new Date(status.lastRun).toLocaleTimeString() : '—'}</b></div>
+      <div>Last result: <b>${status.lastError ? '⚠ '+status.lastError : (status.lastResult || '—')}</b></div>
+    `;
+  }
+
+  async function refreshStatus(){
+    try{
+      const s = await api('/api/settings/status');
+      renderStatus(s.status, s.poller_enabled, s.poller_mode);
+    } catch(err){ /* ignore */ }
+  }
+
+  async function runTest(type, resultElId){
+    const el = document.getElementById(resultElId);
+    el.textContent = 'Testing...'; el.className = 'test-result';
+    try{
+      const res = await api('/api/settings/test-connection', { method:'POST', body: JSON.stringify({type}) });
+      el.textContent = (res.ok ? '✓ ' : '✗ ') + res.message;
+      el.className = 'test-result ' + (res.ok ? 'ok' : 'fail');
+    } catch(err){
+      el.textContent = '✗ ' + err.message;
+      el.className = 'test-result fail';
+    }
+  }
+
+  async function saveSettings(){
+    const btn = document.getElementById('saveBtn');
+    btn.disabled = true; btn.textContent = 'Saving...';
+    const payload = {
+      poller_enabled: document.getElementById('pollerEnabled').checked,
+      poller_mode: document.getElementById('pollerMode').value,
+      poll_interval_ms: Number(document.getElementById('pollInterval').value) * 1000,
+      olt: {
+        host: document.getElementById('oltHost').value.trim(),
+        snmp_community: document.getElementById('oltCommunity').value.trim(),
+        snmp_version: document.getElementById('oltVersion').value
+      },
+      radius: {
+        host: document.getElementById('radiusHost').value.trim(),
+        db_name: document.getElementById('radiusDbName').value.trim(),
+        user: document.getElementById('radiusUser').value.trim(),
+        password: document.getElementById('radiusPassword').value
+      },
+      supabase: {
+        enabled: document.getElementById('supabaseEnabled').checked,
+        url: document.getElementById('supabaseUrl').value.trim(),
+        key: document.getElementById('supabaseKey').value
+      }
+    };
+    try{
+      const res = await api('/api/settings', { method:'PUT', body: JSON.stringify(payload) });
+      renderStatus(res.status, payload.poller_enabled, payload.poller_mode);
+      const msg = document.getElementById('savedMsg');
+      msg.classList.add('show');
+      setTimeout(()=>msg.classList.remove('show'), 2500);
+    } catch(err){
+      alert('Could not save: ' + err.message);
+    }
+    btn.disabled = false; btn.textContent = 'Save settings';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ISP SAVIOUR 2.0 - Login</title>
+<script src="config.js"></script>
+<style>
+  :root{
+    --purple:#6a5cf0;
+    --purple-dark:#5a4de0;
+    --text-dark:#1f2430;
+    --text-gray:#6b7280;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;height:100%;
+    background:linear-gradient(160deg,#eef1fb 0%,#f2f3f6 100%);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--text-dark);
+  }
+  .card{
+    background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(20,25,40,.12);
+    padding:40px 36px;width:360px;max-width:92vw;
+  }
+  .brand-title{font-weight:800;font-size:20px;text-align:center;}
+  .brand-sub{font-size:12.5px;color:var(--text-gray);text-align:center;margin:2px 0 28px;}
+  label{display:block;font-size:12.5px;color:var(--text-gray);margin-bottom:6px;}
+  input{
+    width:100%;padding:12px 14px;border-radius:9px;border:1px solid #e3e6ec;
+    font-size:14.5px;margin-bottom:16px;outline:none;
+  }
+  input:focus{border-color:var(--purple);}
+  .login-btn{
+    width:100%;background:var(--purple);color:#fff;border:none;border-radius:10px;
+    padding:12px 0;font-weight:700;font-size:14.5px;cursor:pointer;
+  }
+  .login-btn:hover{background:var(--purple-dark);}
+  .login-btn:disabled{opacity:.6;cursor:default;}
+  .error{
+    background:#fdecec;color:#c0392b;border-radius:8px;padding:9px 12px;
+    font-size:13px;margin-bottom:14px;display:none;
+  }
+  .error.show{display:block;}
+  .demo-box{
+    margin-top:22px;padding:14px 16px;background:#f7f8fb;border-radius:10px;
+    font-size:12px;color:var(--text-gray);line-height:1.7;
+  }
+  .demo-box b{color:var(--text-dark);}
+  .demo-box .role{color:var(--purple);cursor:pointer;text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="brand-title">ISP SAVIOUR 2.0</div>
+  <div class="brand-sub">Fiber Network Control Panel</div>
+
+  <div class="error" id="errorBox"></div>
+
+  <form id="loginForm">
+    <label>Email</label>
+    <input type="email" id="email" required placeholder="you@isp.local">
+    <label>Password</label>
+    <input type="password" id="password" required placeholder="••••••••">
+    <button class="login-btn" id="loginBtn" type="submit">Log in</button>
+  </form>
+
+  <div style="margin-top:16px;">
+    <a href="#" id="serverToggle" style="font-size:12px;color:var(--text-gray);text-decoration:none;">⚙ Server: <span id="serverUrlLabel"></span> (change)</a>
+    <div id="serverBox" style="display:none;margin-top:10px;">
+      <label>Backend URL</label>
+      <input type="text" id="serverUrl" placeholder="http://localhost:5000">
+    </div>
+  </div>
+
+  <div class="demo-box">
+    <b>Demo accounts</b> (click to fill):<br>
+    <span class="role" data-e="admin@isp.local" data-p="admin123">admin@isp.local / admin123</span> — full access<br>
+    <span class="role" data-e="engineer@isp.local" data-p="engineer123">engineer@isp.local / engineer123</span> — edit ONUs/paths<br>
+    <span class="role" data-e="viewer@isp.local" data-p="viewer123">viewer@isp.local / viewer123</span> — read-only<br>
+    <span style="display:block;margin-top:8px;color:#9aa1ae;">Going live? Log in as admin → Settings → My Account to change these, and Settings → Danger Zone to clear demo data.</span>
+  </div>
+</div>
+
+<script>
+  const BACKEND_URL = window.ISP_BACKEND_URL;
+  const form = document.getElementById('loginForm');
+  const errorBox = document.getElementById('errorBox');
+  const btn = document.getElementById('loginBtn');
+
+  document.querySelectorAll('.demo-box .role').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      document.getElementById('email').value = el.dataset.e;
+      document.getElementById('password').value = el.dataset.p;
+    });
+  });
+
+  // Server URL: shown collapsed, editable, saved to localStorage via config.js's helper
+  document.getElementById('serverUrlLabel').textContent = window.ISP_BACKEND_URL;
+  document.getElementById('serverUrl').value = window.ISP_BACKEND_URL;
+  document.getElementById('serverToggle').addEventListener('click', (e)=>{
+    e.preventDefault();
+    const box = document.getElementById('serverBox');
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  });
+  document.getElementById('serverUrl').addEventListener('change', (e)=>{
+    ispSetBackendUrl(e.target.value);
+    document.getElementById('serverUrlLabel').textContent = window.ISP_BACKEND_URL;
+  });
+
+  // already logged in? skip straight to dashboard
+  if(localStorage.getItem('isp_auth')){
+    window.location.href = 'dashboard.html';
+  }
+
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    errorBox.classList.remove('show');
+    btn.disabled = true; btn.textContent = 'Logging in...';
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    try{
+      const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if(!res.ok){
+        errorBox.textContent = data.error || 'Login failed';
+        errorBox.classList.add('show');
+        btn.disabled = false; btn.textContent = 'Log in';
+        return;
+      }
+      localStorage.setItem('isp_auth', JSON.stringify(data));
+      window.location.href = 'dashboard.html';
+    } catch(err){
+      errorBox.textContent = `⚠ Could not reach backend at ${BACKEND_URL}. Start it with: node backend/server.js`;
+      errorBox.classList.add('show');
+      btn.disabled = false; btn.textContent = 'Log in';
+    }
+  });
+</script>
+</body>
+</html>

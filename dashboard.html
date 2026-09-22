@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ISP Network Dashboard</title>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<style>
+  :root{
+    --nav-bg:#e9f0f9;
+    --nav-border:#d7e0ee;
+    --page-bg:#f2f3f6;
+    --text-dark:#1f2430;
+    --text-gray:#6b7280;
+    --text-lightgray:#9aa1ae;
+    --card-border:#eef0f3;
+    --purple:#6a5cf0;
+    --purple-dark:#5a4de0;
+    --blue-top:#3aa8f0;
+    --gray-top:#98a2ae;
+    --green:#1fae5c;
+    --green-bg:#e7f8ee;
+    --divider:#eef0f3;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;
+    background:var(--page-bg);
+    color:var(--text-dark);
+    min-height:100%;
+  }
+  body{padding-bottom:60px;}
+
+  /* ===== NAV ===== */
+  .navbar{
+    background:var(--nav-bg);
+    border-bottom:1px solid var(--nav-border);
+    display:flex;
+    align-items:center;
+    padding:14px 32px;
+    gap:28px;
+    position:relative;
+    z-index:100;
+    flex-wrap:wrap;
+  }
+  .nav-item{
+    position:relative;
+    color:#3d4451;
+    font-size:15px;
+    cursor:pointer;
+    user-select:none;
+    display:flex;
+    align-items:center;
+    gap:4px;
+    white-space:nowrap;
+  }
+  .nav-item.plain{cursor:default;}
+  .nav-item .caret{font-size:10px;color:#8891a0;margin-left:1px;}
+  .nav-item:hover{color:#111827;}
+  .nav-spacer{flex:1;}
+  .nav-logout{color:#3d4451;font-size:15px;cursor:pointer;}
+  .nav-logout:hover{color:#111827;}
+
+  /* dropdown panel */
+  .dropdown-panel{
+    position:absolute;
+    top:calc(100% + 10px);
+    left:0;
+    background:#fff;
+    border-radius:10px;
+    box-shadow:0 10px 30px rgba(20,25,40,.14);
+    padding:8px 0;
+    min-width:210px;
+    display:none;
+    z-index:200;
+  }
+  .nav-item.open .dropdown-panel{display:block;}
+  .dropdown-panel a{
+    display:block;
+    padding:10px 20px;
+    color:#3d4451;
+    font-size:14.5px;
+    text-decoration:none;
+    white-space:nowrap;
+  }
+  .dropdown-panel a:hover{background:#f4f6fa;color:#111827;}
+
+  /* ===== MAIN ===== */
+  .main{
+    max-width:1200px;
+    padding:36px 32px 0;
+  }
+  .welcome{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:26px;
+    font-weight:700;
+    color:var(--text-dark);
+    margin-bottom:22px;
+  }
+  .welcome .wave-icon{
+    width:34px;height:34px;
+    border-radius:50%;
+    background:#f6c343;
+    display:inline-flex;
+    align-items:center;justify-content:center;
+    font-size:18px;
+    margin:0 2px;
+  }
+
+  .section-label{
+    font-size:12px;
+    letter-spacing:.06em;
+    color:var(--text-lightgray);
+    font-weight:700;
+    margin-bottom:12px;
+  }
+
+  .summary-cards{
+    display:flex;
+    gap:20px;
+    margin-bottom:34px;
+    flex-wrap:wrap;
+  }
+  .stat-card{
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(20,25,40,.05);
+    width:220px;
+    padding:26px 20px 20px;
+    text-align:center;
+    border-top:4px solid var(--purple);
+  }
+  .stat-card.blue{border-top-color:var(--blue-top);}
+  .stat-card.gray{border-top-color:var(--gray-top);}
+  .stat-icon{font-size:30px;margin-bottom:10px;color:#1f2430;}
+  .stat-number{font-size:32px;font-weight:800;color:var(--text-dark);line-height:1;}
+  .stat-label{
+    margin-top:8px;
+    font-size:12px;
+    letter-spacing:.06em;
+    color:var(--text-lightgray);
+    font-weight:700;
+  }
+
+  .search-section{max-width:760px;}
+  .search-row{
+    display:flex;
+    gap:14px;
+    margin-top:10px;
+  }
+  .search-input{
+    flex:1;
+    padding:15px 20px;
+    border-radius:12px;
+    border:1px solid #e3e6ec;
+    background:#fff;
+    font-size:15px;
+    color:var(--text-dark);
+    outline:none;
+  }
+  .search-input:focus{border-color:var(--purple);}
+  .search-btn{
+    background:var(--purple);
+    color:#fff;
+    border:none;
+    border-radius:12px;
+    padding:0 34px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .search-btn:hover{background:var(--purple-dark);}
+
+  .radio-row{
+    display:flex;
+    gap:26px;
+    margin-top:16px;
+    font-size:14.5px;
+    color:var(--text-dark);
+  }
+  .radio-row label{
+    display:flex;align-items:center;gap:7px;cursor:pointer;
+  }
+  .radio-row input[type=radio]{
+    accent-color:var(--purple);
+    width:16px;height:16px;
+  }
+
+  /* ===== RESULT CARD ===== */
+  .result-card{
+    margin-top:26px;
+    background:#fff;
+    border-radius:14px;
+    box-shadow:0 4px 18px rgba(20,25,40,.06);
+    padding:28px 32px 32px;
+    max-width:900px;
+    display:none;
+  }
+  .result-card.show{display:block;}
+  .result-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:700;
+    font-size:17px;
+    margin-bottom:22px;
+  }
+  .result-columns{
+    display:flex;
+    gap:60px;
+    flex-wrap:wrap;
+  }
+  .result-col{flex:1;min-width:280px;}
+  .col-heading{
+    font-size:12px;
+    letter-spacing:.06em;
+    color:var(--text-lightgray);
+    font-weight:700;
+    margin-bottom:14px;
+  }
+  .row{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    padding:11px 0;
+    border-bottom:1px solid var(--divider);
+    font-size:14.5px;
+  }
+  .row:last-child{border-bottom:none;}
+  .row .label{color:var(--text-gray);}
+  .row .value{color:var(--text-dark);font-weight:700;text-align:right;}
+  .badge-online{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:var(--green-bg);
+    color:var(--green);
+    font-weight:700;
+    padding:4px 12px;
+    border-radius:999px;
+    font-size:13.5px;
+  }
+  .badge-online .dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+
+  @media (max-width:640px){
+    .navbar{gap:16px;padding:12px 16px;}
+    .main{padding:24px 16px 0;}
+    .summary-cards{gap:12px;}
+    .stat-card{width:100%;}
+    .search-row{flex-direction:column;}
+    .result-columns{gap:24px;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+  <div class="nav-item plain">Home</div>
+
+  <div class="nav-item" data-menu="live">
+    Live <span class="caret">▾</span>
+    <div class="dropdown-panel">
+      <a href="live-map.html">Live - Map</a>
+      <a href="#">Live - Wire Down ONUs</a>
+      <a href="live-offline-onus.html">Live - Offline ONUs</a>
+      <a href="#">Live - Online ONUs</a>
+      <a href="#">Live - ONU Log</a>
+    </div>
+  </div>
+
+  <div class="nav-item" data-menu="oltpons">
+    OLT/ PONs <span class="caret">▾</span>
+    <div class="dropdown-panel">
+      <a href="#">View OLTs</a>
+      <a href="#">Add OLT</a>
+      <a href="#">View PONs</a>
+      <a href="#">Add PON</a>
+    </div>
+  </div>
+
+  <div class="nav-item" data-menu="cs">
+    C/S <span class="caret">▾</span>
+    <div class="dropdown-panel">
+      <a href="#">View C/S Devices</a>
+      <a href="#">Add C/S Device</a>
+    </div>
+  </div>
+
+  <div class="nav-item" data-menu="onu">
+    ONU <span class="caret">▾</span>
+    <div class="dropdown-panel">
+      <a href="#">View Edit Del ONU</a>
+      <a href="#">Add ONU</a>
+      <a href="manage-onus.html">Manage ONU Map</a>
+      <a href="#">Edit ONU GPS DB</a>
+      <a href="#">Add ONU Bulk</a>
+    </div>
+  </div>
+
+  <div class="nav-item" data-menu="landmarks">
+    Landmarks <span class="caret">▾</span>
+    <div class="dropdown-panel">
+      <a href="#">View Landmarks</a>
+      <a href="#">Add Landmark</a>
+    </div>
+  </div>
+
+  <div class="nav-item" data-menu="fiberpaths">
+    Fiber Paths <span class="caret">▾</span>
+    <div class="dropdown-panel">
+      <a href="#">View Fiber Paths</a>
+      <a href="fiber-paths.html">Add Fiber Paths Map</a>
+      <a href="#">Edit Fiber Paths Map</a>
+      <a href="#">Delete Fiber Paths Map</a>
+    </div>
+  </div>
+
+  <div class="nav-item" data-menu="radius">
+    Radius <span class="caret">▾</span>
+    <div class="dropdown-panel">
+      <a href="#">View Radius Users</a>
+      <a href="#">Add Radius User</a>
+    </div>
+  </div>
+
+  <div class="nav-item" data-menu="tools">
+    Tools <span class="caret">▾</span>
+    <div class="dropdown-panel">
+      <a href="#">Diagnostics</a>
+      <a href="settings.html" style="font-weight:700;">⚙ Settings</a>
+    </div>
+  </div>
+
+  <div class="nav-item" data-menu="wisp">
+    WISP <span class="caret">▾</span>
+    <div class="dropdown-panel">
+      <a href="#">Towers</a>
+      <a href="#">CPEs</a>
+    </div>
+  </div>
+
+  <div class="nav-spacer"></div>
+  <div class="nav-logout">Logout</div>
+</nav>
+
+<div class="main">
+  <div class="welcome">
+    Welcome, <span class="wave-icon">👋</span>, Logged in as <span data-user-email>...</span> <span style="font-size:13px;font-weight:600;color:var(--text-lightgray);text-transform:uppercase;">(<span data-user-role>...</span>)</span>
+  </div>
+
+  <div class="section-label">NETWORK SUMMARY</div>
+  <div class="summary-cards">
+    <div class="stat-card">
+      <div class="stat-icon">🖥️</div>
+      <div class="stat-number">1</div>
+      <div class="stat-label">OLTS</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-icon">🔀</div>
+      <div class="stat-number">4</div>
+      <div class="stat-label">PONS</div>
+    </div>
+    <div class="stat-card gray">
+      <div class="stat-icon">📡</div>
+      <div class="stat-number">142</div>
+      <div class="stat-label">TOTAL ONUS</div>
+    </div>
+  </div>
+
+  <div class="search-section">
+    <div class="section-label">ONU SEARCH</div>
+    <div class="search-row">
+      <input class="search-input" id="onuInput" type="text" placeholder="Type ONU name (min 3 letters)...">
+      <button class="search-btn" id="searchBtn">Search</button>
+    </div>
+    <div class="radio-row">
+      <label><input type="radio" name="mode" value="onu"> ONU</label>
+      <label><input type="radio" name="mode" value="radius"> Radius</label>
+      <label><input type="radio" name="mode" value="both" checked> Both</label>
+    </div>
+
+    <div class="result-card" id="resultCard">
+      <div class="result-header">📡 <span id="resultName">healthcare2</span></div>
+      <div class="result-columns" id="resultColumns"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Dropdown toggle
+  const navItems = document.querySelectorAll('.nav-item[data-menu]');
+  navItems.forEach(item=>{
+    item.addEventListener('click', (e)=>{
+      const wasOpen = item.classList.contains('open');
+      navItems.forEach(i=>i.classList.remove('open'));
+      if(!wasOpen) item.classList.add('open');
+      e.stopPropagation();
+    });
+  });
+  document.addEventListener('click', ()=>{
+    navItems.forEach(i=>i.classList.remove('open'));
+  });
+
+  // Search - calls the backend API (start it with: node backend/server.js)
+  const BACKEND_URL = window.ISP_BACKEND_URL;
+  const input = document.getElementById('onuInput');
+  const btn = document.getElementById('searchBtn');
+  const card = document.getElementById('resultCard');
+  const nameEl = document.getElementById('resultName');
+
+  function fmtDate(iso){
+    if(!iso) return '-';
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-GB').replace(/\//g,'/') + '<br>' + d.toTimeString().slice(0,8);
+  }
+
+  function renderResult(o){
+    nameEl.textContent = o.name;
+    document.getElementById('resultColumns').innerHTML = `
+      <div class="result-col">
+        <div class="col-heading">LIVE ONU STATUS</div>
+        <div class="row"><span class="label">ONU ID</span><span class="value">${o.onu_id || '-'}</span></div>
+        <div class="row"><span class="label">Status</span><span class="value">${o.status==='Online' ? '<span class="badge-online"><span class="dot"></span>Online</span>' : o.status}</span></div>
+        <div class="row"><span class="label">MAC</span><span class="value">${o.mac || '-'}</span></div>
+        <div class="row"><span class="label">Distance (m)</span><span class="value">${o.distance ? o.distance+' m' : '-'}</span></div>
+        <div class="row"><span class="label">RX Power</span><span class="value">${o.rx_power != null ? o.rx_power+' dBm' : 'N/A'}</span></div>
+        <div class="row"><span class="label">Connected</span><span class="value">${fmtDate(o.connected_at)}</span></div>
+      </div>
+      <div class="result-col">
+        <div class="col-heading">RADIUS</div>
+        <div class="row"><span class="label">Username</span><span class="value">${o.radius_username || '-'}</span></div>
+        <div class="row"><span class="label">Account</span><span class="value">${o.radius_account || '-'}</span></div>
+        <div class="row"><span class="label">Status</span><span class="value">${o.radius_status==='Online' ? '<span class="badge-online"><span class="dot"></span>Online</span>' : (o.radius_status||'-')}</span></div>
+        <div class="row"><span class="label">MAC</span><span class="value">${o.radius_mac || '-'}</span></div>
+        <div class="row"><span class="label">IP Address</span><span class="value">${o.radius_ip || '-'}</span></div>
+        <div class="row"><span class="label">Logged In</span><span class="value">${fmtDate(o.logged_in_at)}</span></div>
+        <div class="row"><span class="label">Download</span><span class="value">${o.download_usage_gb != null ? o.download_usage_gb+'GB' : '-'}</span></div>
+        <div class="row"><span class="label">Upload</span><span class="value">${o.upload_usage_mb != null ? o.upload_usage_mb+'MB' : '-'}</span></div>
+      </div>`;
+  }
+
+  async function doSearch(){
+    const val = input.value.trim();
+    if(val.length < 3){
+      card.classList.remove('show');
+      return;
+    }
+    try{
+      const res = await fetch(`${BACKEND_URL}/api/onus/search?q=${encodeURIComponent(val)}`);
+      const results = await res.json();
+      if(results.length === 0){
+        card.classList.remove('show');
+        return;
+      }
+      renderResult(results[0]);
+      card.classList.add('show');
+    } catch(err){
+      nameEl.textContent = val;
+      document.getElementById('resultColumns').innerHTML =
+        `<div style="color:#c0392b;font-size:14px;">⚠ Could not reach backend at ${BACKEND_URL}. Start it with:<br><code>node backend/server.js</code></div>`;
+      card.classList.add('show');
+    }
+  }
+  btn.addEventListener('click', doSearch);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') doSearch(); });
+</script>
+
+</body>
+</html>
